@@ -207,6 +207,7 @@ public class Program
             options.AccessDeniedPath = "/Identity/Account/AccessDenied";
             options.SlidingExpiration = true;
         });
+        builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
         var app = builder.Build();
 
