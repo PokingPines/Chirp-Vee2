@@ -1,12 +1,5 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
-unless File.exist? "/etc/vbox/networks.conf"
-    # See https://www.virtualbox.org/manual/ch06.html#network_hostonly
-   puts "Adding network configuration for VirtualBox."
-   puts "You will need to enter your root password..."
-   system("sudo bash vbox-network.sh")
- end
  
  Vagrant.configure("2") do |config|
    config.vm.box = "bento/ubuntu-22.04"
