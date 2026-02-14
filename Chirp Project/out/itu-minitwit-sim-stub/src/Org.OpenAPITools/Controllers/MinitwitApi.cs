@@ -181,18 +181,34 @@ namespace Org.OpenAPITools.Controllers
         [Consumes("application/json")]
         [ValidateModelState]
         [SwaggerOperation("PostFollow")]
-        [SwaggerResponse(statusCode: 403, type: typeof(ErrorResponse), description: "Unauthorized - Must include correct Authorization header")]
-        public virtual IActionResult PostFollow([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromBody]FollowAction payload, [FromQuery (Name = "latest")]int? latest)
+        public virtual IActionResult PostFollow(
+            [FromRoute (Name = "username")] string username,
+            [FromHeader (Name = "Authorization")] string authorization,
+            [FromBody] FollowAction payload,
+            [FromQuery (Name = "latest")] int? latest)
         {
+            if (latest.HasValue)
+            {
+                Console.WriteLine($"[SIM] Latest = {latest.Value} for follow action by {username}");
+            }
 
-            //TODO: Uncomment the next line to return response 204 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(204);
-            //TODO: Uncomment the next line to return response 403 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(403, default);
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404);
+            // Check what action it is
+            if (payload == null || 
+                (string.IsNullOrEmpty(payload.Follow) && string.IsNullOrEmpty(payload.Unfollow)))
+            {
+                return BadRequest(new ErrorResponse 
+                { 
+                    Status = 400, 
+                    ErrorMsg = "Must provide either 'follow' or 'unfollow'" 
+                });
+            }
 
-            throw new NotImplementedException();
+            string actionType = payload.Follow != null ? "follow" : "unfollow";
+            string target = payload.Follow ?? payload.Unfollow ?? "";
+
+            Console.WriteLine($"[SIM] {username} wants to {actionType} {target}");
+
+            return NoContent();  // 204
         }
 
         /// <summary>
@@ -210,16 +226,31 @@ namespace Org.OpenAPITools.Controllers
         [Consumes("application/json")]
         [ValidateModelState]
         [SwaggerOperation("PostMessagesPerUser")]
-        [SwaggerResponse(statusCode: 403, type: typeof(ErrorResponse), description: "Unauthorized - Must include correct Authorization header")]
-        public virtual IActionResult PostMessagesPerUser([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromBody]PostMessage payload, [FromQuery (Name = "latest")]int? latest)
+        public virtual IActionResult PostMessagesPerUser(
+            [FromRoute (Name = "username")] string username,
+            [FromHeader (Name = "Authorization")] string authorization,
+            [FromBody] PostMessage payload,
+            [FromQuery (Name = "latest")] int? latest)
         {
+            if (latest.HasValue)
+            {
+                Console.WriteLine($"[SIM] Latest = {latest.Value} for tweet by {username}");
+            }
 
-            //TODO: Uncomment the next line to return response 204 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(204);
-            //TODO: Uncomment the next line to return response 403 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(403, default);
+            // Basic validation
+            if (payload == null || string.IsNullOrWhiteSpace(payload.Content))
+            {
+                return BadRequest(new ErrorResponse 
+                { 
+                    Status = 400, 
+                    ErrorMsg = "Message content is required" 
+                });
+            }
 
-            throw new NotImplementedException();
+            // Pretend we posted it
+            Console.WriteLine($"[SIM] Tweet by {username}: \"{payload.Content}\"");
+
+            return NoContent();  // 204
         }
 
         /// <summary>
@@ -235,16 +266,30 @@ namespace Org.OpenAPITools.Controllers
         [Consumes("application/json")]
         [ValidateModelState]
         [SwaggerOperation("PostRegister")]
-        [SwaggerResponse(statusCode: 400, type: typeof(ErrorResponse), description: "Bad Request | Possible reasons:  - missing username  - invalid email  - password missing  - username already taken")]
-        public virtual IActionResult PostRegister([FromBody]RegisterRequest payload, [FromQuery (Name = "latest")]int? latest)
+        public virtual IActionResult PostRegister([FromBody] RegisterRequest payload, [FromQuery (Name = "latest")]int? latest)
         {
+            // For now we just acknowledge the latest parameter (no storage yet)
+            if (latest.HasValue)
+            {
+                Console.WriteLine($"[SIM] Received latest = {latest.Value}");
+            }
 
-            //TODO: Uncomment the next line to return response 204 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(204);
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400, default);
+            // Very basic validation - simulator expects 400 on missing fields
+            if (payload == null || 
+                string.IsNullOrWhiteSpace(payload.Username) || 
+                string.IsNullOrWhiteSpace(payload.Pwd))
+            {
+                return BadRequest(new ErrorResponse 
+                { 
+                    Status = 400, 
+                    ErrorMsg = "Missing username or password" 
+                });
+            }
 
-            throw new NotImplementedException();
+            // Pretend registration succeeded (no DB yet)
+            Console.WriteLine($"[SIM] Register user: {payload.Username} (email: {payload.Email ?? "not provided"})");
+
+            return NoContent();  // ← 204 - this is what simulator wants on success
         }
     }
 }
