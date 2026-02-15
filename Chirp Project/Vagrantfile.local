@@ -1,0 +1,25 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+ 
+ Vagrant.configure("2") do |config|
+   config.vm.box = "bento/ubuntu-22.04"
+ 
+   config.vm.network "private_network", type: "dhcp"
+ 
+   config.vm.provision "file", source: "./", destination: "./"
+ 
+   config.vm.define "itu-minitwit", primary: true do |server|
+     server.vm.network "forwarded_port", guest: 8080, host: 8080
+     server.vm.provider "virtualbox" do |vb|
+       vb.memory = "1024"
+     end
+     server.vm.hostname = "itu-minitwit"
+     server.vm.provision "shell", privileged: true, inline: <<-SHELL
+        cd "Chirp Project"
+       ./docker-cli.sh
+
+       docker build -t vagrant-minitwit:latest .
+       docker run -d -p 8080:8080 --name minitwit vagrant-minitwit:latest
+     SHELL
+   end
+ end
