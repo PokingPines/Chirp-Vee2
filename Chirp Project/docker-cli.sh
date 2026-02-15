@@ -22,6 +22,6 @@ sudo apt-get install containerd.io
 sudo apt-get install docker-buildx-plugin 
 sudo apt-get install docker-compose-plugin
 
-sudo usermod -aG docker vagrant
+sudo usermod -aG docker $USER
 
 sudo systemctl restart docker
