@@ -8,7 +8,7 @@ Start by building the docker image while in Chirp Project directory using: `dock
 
 Then run the image using: `docker run -p 8080:8080 userid/imagename`.
 
-And a third way is to use vagrant to provision a VM on ditial ocean or locally on your own machine.
+And a third way is to use vagrant to provision a VM on Digital Ocean or locally on your own machine.
 
 Digital ocean:
 
@@ -16,6 +16,8 @@ Digital ocean:
 cd "Chirp Project"
 vagrant up
 ```
+
+Then head to Digital Ocean and find the ip of the droplet and head to <droplet-id>:8080, to see the applicaiton running.
 
 Locally:
 Rename Vagrantfile => Vagrantfile.remote
@@ -26,3 +28,5 @@ Then:
 cd "Chirp Project"
 vagrant up
 ```
+
+Then head to http://localhost:8080 to see the application running.
