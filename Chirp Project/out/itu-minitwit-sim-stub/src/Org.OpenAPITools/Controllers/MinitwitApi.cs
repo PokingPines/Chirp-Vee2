@@ -22,12 +22,16 @@ using Org.OpenAPITools.Models;
 
 namespace Org.OpenAPITools.Controllers
 { 
+
+    
+
     /// <summary>
     /// 
     /// </summary>
     [ApiController]
     public class MinitwitApiController : ControllerBase
-    { 
+    {   
+        public static int latest_ = 0;
         /// <summary>
         /// 
         /// </summary>
@@ -48,21 +52,15 @@ namespace Org.OpenAPITools.Controllers
         public virtual IActionResult GetFollow([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no)
         {
 
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default);
-            //TODO: Uncomment the next line to return response 403 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(403, default);
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404);
-            string exampleJson = null;
-            exampleJson = "{\n  \"follows\" : [ \"Helge\", \"John\" ]\n}";
-            exampleJson = "{\n  \"error_msg\" : \"You are not authorized to use this resource!\",\n  \"status\" : 403\n}";
+            if (latest.HasValue)
+            {
+                latest_ = latest.Value;
+                Console.WriteLine($"[SIM] Latest = {latest.Value} for checking followers of {username}");
+            }
+
+            var follows_ = new List<string> {};
             
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<FollowsResponse>(exampleJson)
-            : default;
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            return Ok(new {follows = follows_});
         }
 
         /// <summary>
@@ -79,20 +77,9 @@ namespace Org.OpenAPITools.Controllers
         [SwaggerResponse(statusCode: 500, type: typeof(ErrorResponse), description: "Internal Server Error")]
         public virtual IActionResult GetLatestValue()
         {
-
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default);
-            //TODO: Uncomment the next line to return response 500 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(500, default);
-            string exampleJson = null;
-            exampleJson = "{\n  \"latest\" : 0\n}";
-            exampleJson = "{\n  \"error_msg\" : \"You are not authorized to use this resource!\",\n  \"status\" : 403\n}";
-            
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<LatestValue>(exampleJson)
-            : default;
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            Console.WriteLine("##Printing Latest##");
+            Console.WriteLine(latest_);
+            return Ok(new { latest = latest_ });
         }
 
         /// <summary>
@@ -189,6 +176,7 @@ namespace Org.OpenAPITools.Controllers
         {
             if (latest.HasValue)
             {
+                latest_ = latest.Value;
                 Console.WriteLine($"[SIM] Latest = {latest.Value} for follow action by {username}");
             }
 
@@ -208,7 +196,10 @@ namespace Org.OpenAPITools.Controllers
 
             Console.WriteLine($"[SIM] {username} wants to {actionType} {target}");
 
-            return NoContent();  // 204
+            var follows_ = new List<string> {};
+            
+            return Ok(new {follows = follows_});
+
         }
 
         /// <summary>
@@ -234,6 +225,7 @@ namespace Org.OpenAPITools.Controllers
         {
             if (latest.HasValue)
             {
+                latest_ = latest.Value;
                 Console.WriteLine($"[SIM] Latest = {latest.Value} for tweet by {username}");
             }
 
@@ -253,6 +245,7 @@ namespace Org.OpenAPITools.Controllers
             return NoContent();  // 204
         }
 
+        ///
         /// <summary>
         /// 
         /// </summary>
@@ -271,6 +264,7 @@ namespace Org.OpenAPITools.Controllers
             // For now we just acknowledge the latest parameter (no storage yet)
             if (latest.HasValue)
             {
+                latest_ = latest.Value;
                 Console.WriteLine($"[SIM] Received latest = {latest.Value}");
             }
 
@@ -291,5 +285,6 @@ namespace Org.OpenAPITools.Controllers
 
             return NoContent();  // ← 204 - this is what simulator wants on success
         }
+
     }
 }
